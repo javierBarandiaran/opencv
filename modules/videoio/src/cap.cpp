@@ -369,7 +369,7 @@ CV_IMPL CvCapture * cvCreateFileCapture (const char * filename)
  * API that can write a given stream.
  */
 CV_IMPL CvVideoWriter* cvCreateVideoWriter( const char* filename, int fourcc,
-                                            double fps, CvSize frameSize, int is_color )
+                                            double fps, CvSize frameSize, double bitrate, int is_color )
 {
     // If none of the writers is used
     // these statements suppress 'unused parameter' warnings.
@@ -384,7 +384,7 @@ CV_IMPL CvVideoWriter* cvCreateVideoWriter( const char* filename, int fourcc,
         TRY_OPEN(result, cvCreateVideoWriter_Images(filename))
 
 #ifdef HAVE_FFMPEG
-    TRY_OPEN(result, cvCreateVideoWriter_FFMPEG_proxy (filename, fourcc, fps, frameSize, is_color))
+    TRY_OPEN(result, cvCreateVideoWriter_FFMPEG_proxy (filename, fourcc, fps, frameSize, bitrate, is_color))
 #endif
 
 #ifdef HAVE_VFW
@@ -720,9 +720,9 @@ double VideoCapture::get(int propId) const
 VideoWriter::VideoWriter()
 {}
 
-VideoWriter::VideoWriter(const String& filename, int _fourcc, double fps, Size frameSize, bool isColor)
+VideoWriter::VideoWriter(const String& filename, int _fourcc, double fps, Size frameSize, double bitrate, bool isColor)
 {
-    open(filename, _fourcc, fps, frameSize, isColor);
+	open(filename, _fourcc, fps, frameSize, bitrate, isColor);
 }
 
 void VideoWriter::release()
@@ -736,7 +736,7 @@ VideoWriter::~VideoWriter()
     release();
 }
 
-bool VideoWriter::open(const String& filename, int _fourcc, double fps, Size frameSize, bool isColor)
+bool VideoWriter::open(const String& filename, int _fourcc, double fps, Size frameSize, double bitrate, bool isColor)
 {
     CV_INSTRUMENT_REGION()
 
@@ -744,7 +744,7 @@ bool VideoWriter::open(const String& filename, int _fourcc, double fps, Size fra
     iwriter = IVideoWriter_create(filename, _fourcc, fps, frameSize, isColor);
     if (!iwriter.empty())
         return true;
-    writer.reset(cvCreateVideoWriter(filename.c_str(), _fourcc, fps, frameSize, isColor));
+	writer.reset(cvCreateVideoWriter(filename.c_str(), _fourcc, fps, frameSize, bitrate, isColor));
     return isOpened();
 }
 

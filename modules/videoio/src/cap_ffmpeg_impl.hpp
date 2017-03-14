@@ -1267,7 +1267,7 @@ bool CvCapture_FFMPEG::setProperty( int property_id, double value )
 struct CvVideoWriter_FFMPEG
 {
     bool open( const char* filename, int fourcc,
-               double fps, int width, int height, bool isColor );
+               double fps, int width, int height, double bitrate, bool isColor );
     void close();
     bool writeFrame( const unsigned char* data, int step, int width, int height, int cn, int origin );
 
@@ -1833,7 +1833,7 @@ static inline bool cv_ff_codec_tag_list_match(const AVCodecTag *const *tags, CV_
 
 /// Create a video writer object that uses FFMPEG
 bool CvVideoWriter_FFMPEG::open( const char * filename, int fourcc,
-                                 double fps, int width, int height, bool is_color )
+                                 double fps, int width, int height, double bitrate, bool is_color )
 {
     CV_CODEC_ID codec_id = CV_CODEC(CODEC_ID_NONE);
     int err, codec_pix_fmt;
@@ -1964,8 +1964,8 @@ bool CvVideoWriter_FFMPEG::open( const char * filename, int fourcc,
         break;
     }
 
-    double bitrate = MIN(bitrate_scale*fps*width*height, (double)INT_MAX/2);
-
+    //double bitrate = MIN(bitrate_scale*fps*width*height, (double)INT_MAX/2);
+	
     // TODO -- safe to ignore output audio stream?
     video_st = icv_add_video_stream_FFMPEG(oc, codec_id,
                                            width, height, (int)(bitrate + 0.5),
@@ -2142,11 +2142,11 @@ int cvRetrieveFrame_FFMPEG(CvCapture_FFMPEG* capture, unsigned char** data, int*
 }
 
 CvVideoWriter_FFMPEG* cvCreateVideoWriter_FFMPEG( const char* filename, int fourcc, double fps,
-                                                  int width, int height, int isColor )
+                                                  int width, int height, double bitrate, int isColor )
 {
     CvVideoWriter_FFMPEG* writer = (CvVideoWriter_FFMPEG*)malloc(sizeof(*writer));
     writer->init();
-    if( writer->open( filename, fourcc, fps, width, height, isColor != 0 ))
+    if( writer->open( filename, fourcc, fps, width, height, bitrate, isColor != 0 ))
         return writer;
     writer->close();
     free(writer);

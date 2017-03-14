@@ -834,7 +834,8 @@ public:
     other values as fourcc code: see [ObjectType](http://www.mp4ra.org/codecs.html),
     so you may receive a warning message from OpenCV about fourcc code conversion.
     @param fps Framerate of the created video stream.
-    @param frameSize Size of the video frames.
+	@param frameSize Size of the video frames.
+	@param bitrate Compression bitrate (bps).
     @param isColor If it is not zero, the encoder will expect and encode color frames, otherwise it
     will work with grayscale frames (the flag is currently supported on Windows only).
 
@@ -847,7 +848,7 @@ public:
     - If FFMPEG is enabled, using `codec=0; fps=0;` you can create an uncompressed (raw) video file.
     */
     CV_WRAP VideoWriter(const String& filename, int fourcc, double fps,
-                Size frameSize, bool isColor = true);
+                Size frameSize, double bitrate,  bool isColor = true);
 
     /** @brief Default destructor
 
@@ -864,7 +865,7 @@ public:
     The method first calls VideoWriter::release to close the already opened file.
      */
     CV_WRAP virtual bool open(const String& filename, int fourcc, double fps,
-                      Size frameSize, bool isColor = true);
+                      Size frameSize, double bitrate, bool isColor = true);
 
     /** @brief Returns true if video writer has been successfully initialized.
     */
